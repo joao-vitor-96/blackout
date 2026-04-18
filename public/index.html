@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Blackout 🖤"/>
+<title>Blackout 🖤</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a0a;color:#f0f0f0;min-height:100vh;overscroll-behavior:none;padding-bottom:env(safe-area-inset-bottom)}
+:root{--safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px)}
+
+/* HEADER */
+.header{background:linear-gradient(180deg,#111 0%,#0a0a0a 100%);padding:calc(var(--safe-top) + 16px) 20px 0;border-bottom:1px solid #1a1a1a;position:sticky;top:0;z-index:50}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.car-selector{display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 14px;background:#1a1a1a;border-radius:50px;border:1px solid #2a2a2a}
+.car-photo{width:36px;height:36px;border-radius:50%;object-fit:cover;background:#222;display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden;flex-shrink:0}
+.car-photo img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.car-name{font-weight:700;font-size:15px;color:#fff}
+.car-sub{font-size:11px;color:#666}
+.header-actions{display:flex;gap:8px}
+.icon-btn{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;color:#fff}
+
+/* KM CARD */
+.km-card{background:#111;border:1px solid #222;border-radius:16px;padding:16px 20px;margin:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.km-left .label{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.km-value{font-size:26px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;cursor:pointer;display:flex;align-items:center;gap:6px}
+.km-value .edit-icon{font-size:13px;color:#444}
+.km-right .total-label{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;text-align:right}
+.km-right .total-val{font-size:18px;font-weight:700;color:#e05252;text-align:right}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid #1a1a1a;margin:0 20px}
+.tab{flex:1;padding:12px 0;background:transparent;border:none;color:#555;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:.2s}
+.tab.active{color:#fff;border-bottom-color:#fff}
+
+/* CONTENT */
+.content{padding:16px 20px;padding-bottom:calc(80px + var(--safe-bot))}
+
+/* ALERT CARDS */
+.alert-card{border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid transparent}
+.alert-card.urgente{background:#1a0a0a;border-color:#e0525240}
+.alert-card.atencao{background:#1a1400;border-color:#e0c25240}
+.alert-card.ok{background:#0a1a0a;border-color:#52e07240}
+.alert-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.alert-title{font-size:14px;font-weight:600;color:#fff}
+.alert-desc{font-size:12px;color:#888;margin-top:2px}
+.alert-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+.urgente .alert-badge{background:#e0525220;color:#e05252}
+.atencao .alert-badge{background:#e0c25220;color:#e0c252}
+.ok .alert-badge{background:#52e07220;color:#52e072}
+.alert-info{display:flex;gap:14px;flex-wrap:wrap}
+.alert-info span{font-size:11px;color:#666}
+.mark-done-btn{margin-top:10px;padding:7px 14px;background:#ffffff15;border:1px solid #ffffff20;border-radius:8px;color:#ccc;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;width:100%}
+
+/* HISTORY */
+.hist-item{display:flex;gap:12px;padding:14px;background:#111;border-radius:12px;margin-bottom:10px;border:1px solid #1a1a1a}
+.hist-icon{width:40px;height:40px;border-radius:12px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.hist-body{flex:1;min-width:0}
+.hist-title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-sub{font-size:11px;color:#555;margin-top:2px}
+.hist-brand{font-size:11px;color:#888;margin-top:3px}
+.hist-right{text-align:right;flex-shrink:0}
+.hist-value{font-size:14px;font-weight:600;color:#e05252}
+.hist-meta{display:flex;gap:6px;margin-top:4px;justify-content:flex-end;align-items:center}
+.hist-btn{background:none;border:none;color:#444;cursor:pointer;font-size:13px;padding:2px 4px}
+.hist-btn.has-photo{color:#60A5FA}
+.photo-badge{font-size:10px;color:#60A5FA;background:#60A5FA15;padding:1px 6px;border-radius:99px}
+
+/* FAB */
+.fab{position:fixed;bottom:calc(72px + var(--safe-bot));left:50%;transform:translateX(-50%);background:#fff;color:#000;border:none;border-radius:50px;padding:14px 32px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;z-index:100;box-shadow:0 4px 20px #00000080}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #1a1a1a;display:flex;padding-bottom:var(--safe-bot);z-index:200}
+.nav-btn{flex:1;padding:12px 0 10px;background:transparent;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit}
+.nav-btn .nav-icon{font-size:20px}
+.nav-btn .nav-label{font-size:11px;font-weight:600;color:#444}
+.nav-btn.active .nav-label{color:#fff}
+.nav-btn.active{border-top:2px solid #fff;margin-top:-1px}
+
+/* MODAL OVERLAY */
+.modal-overlay{position:fixed;inset:0;background:#000000cc;z-index:300;display:flex;align-items:flex-end;justify-content:center}
+.modal-overlay.hidden{display:none}
+.modal{background:#111;width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:24px 20px;padding-bottom:calc(28px + var(--safe-bot));max-height:92vh;overflow-y:auto;border:1px solid #222}
+.modal-handle{width:40px;height:4px;background:#333;border-radius:99px;margin:0 auto 20px}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+.close-btn{background:#1a1a1a;border:none;color:#888;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+
+/* FORM */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.field input,.field select,.field textarea{width:100%;background:#0a0a0a;border:1px solid #222;border-radius:10px;padding:13px 14px;color:#f0f0f0;font-family:inherit;font-size:14px;outline:none}
+.field textarea{resize:vertical;min-height:70px}
+.field input:focus,.field select:focus{border-color:#444}
+
+/* TYPE TOGGLE */
+.type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.type-btn{padding:11px 0;border-radius:10px;border:none;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+.type-btn.active-prox{background:#fff;color:#000}
+.type-btn.active-feita{background:#fff;color:#000}
+.type-btn.inactive{background:#1a1a1a;color:#555}
+
+/* PHOTO UPLOAD */
+.photo-area{border:2px dashed #222;border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:.2s;position:relative}
+.photo-area:hover{border-color:#444}
+.photo-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.photo-thumb{width:60px;height:60px;border-radius:8px;object-fit:cover;position:relative}
+.photo-thumb-wrap{position:relative;display:inline-block}
+.photo-remove{position:absolute;top:-6px;right:-6px;background:#e05252;border:none;border-radius:50%;width:18px;height:18px;color:#fff;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* PRIORITY */
+.priority-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.prio-btn{padding:9px 0;border-radius:10px;border:1px solid #222;background:transparent;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:.15s;color:#555}
+.prio-btn.sel-urgente{background:#e0525220;border-color:#e05252;color:#e05252}
+.prio-btn.sel-atencao{background:#e0c25220;border-color:#e0c252;color:#e0c252}
+.prio-btn.sel-ok{background:#52e07220;border-color:#52e072;color:#52e072}
+
+/* SAVE BTN */
+.save-btn{width:100%;padding:15px;background:#fff;color:#000;border:none;border-radius:12px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
+.save-btn:active{transform:scale(.98)}
+
+/* CAR MENU */
+.car-menu-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.car-menu-item{display:flex;align-items:center;gap:12px;padding:14px;background:#0a0a0a;border-radius:12px;border:1px solid #1a1a1a;cursor:pointer}
+.car-menu-item.active{border-color:#fff}
+.car-menu-photo{width:48px;height:48px;border-radius:12px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;flex-shrink:0}
+.car-menu-photo img{width:100%;height:100%;object-fit:cover}
+.car-menu-info{flex:1}
+.car-menu-name{font-weight:700;font-size:15px}
+.car-menu-sub{font-size:12px;color:#666;margin-top:2px}
+.car-menu-check{font-size:20px;color:#fff}
+.add-car-btn{width:100%;padding:13px;background:#0a0a0a;border:1px dashed #333;border-radius:12px;color:#555;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+
+/* KM INLINE EDIT */
+.km-input{font-size:24px;font-weight:700;background:transparent;border:none;border-bottom:2px solid #fff;color:#fff;font-family:inherit;width:140px;outline:none;padding:2px 0}
+
+/* SEARCH */
+.search-bar{background:#111;border:1px solid #1a1a1a;border-radius:10px;padding:10px 14px;width:100%;color:#f0f0f0;font-family:inherit;font-size:14px;outline:none;margin-bottom:14px}
+
+/* EMPTY */
+.empty{text-align:center;padding:50px 20px;color:#444}
+.empty .em-icon{font-size:40px;margin-bottom:12px}
+
+/* STAT ROW */
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-card{background:#111;border-radius:12px;padding:14px;border:1px solid #1a1a1a}
+.stat-label{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.stat-val{font-size:17px;font-weight:700}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="car-selector" onclick="openCarMenu()">
+      <div class="car-photo" id="headerCarPhoto"><span>🚗</span></div>
+      <div>
+        <div class="car-name" id="headerCarName">Blackout 🖤</div>
+        <div class="car-sub" id="headerCarSub">Fiat Stilo · 2004</div>
+      </div>
+      <span style="color:#444;font-size:12px">▾</span>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="openSearch()">🔍</button>
+    </div>
+  </div>
+
+  <!-- KM + Total -->
+  <div class="km-card">
+    <div class="km-left">
+      <div class="label">KM Atual</div>
+      <div class="km-value" id="kmDisplay" onclick="startKmEdit()">
+        <span id="kmText">201.000</span>
+        <span class="edit-icon">✎</span>
+      </div>
+      <input class="km-input hidden" id="kmInput" type="number" onblur="saveKm()" onkeydown="if(event.key==='Enter')saveKm()"/>
+    </div>
+    <div class="km-right">
+      <div class="total-label">Total Gasto</div>
+      <div class="total-val" id="totalGasto">R$ 24.609,71</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('alertas',this)">🔔 Alertas</button>
+    <button class="tab" onclick="switchTab('historico',this)">📋 Histórico</button>
+    <button class="tab" onclick="switchTab('stats',this)">📊 Resumo</button>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content" id="tabAlertas">
+  <div id="alertasList"></div>
+</div>
+
+<div class="content hidden" id="tabHistorico">
+  <input class="search-bar" id="searchInput" placeholder="Buscar manutenção..." oninput="renderHistorico()"/>
+  <div id="historicoList"></div>
+</div>
+
+<div class="content hidden" id="tabStats">
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-label">Total Gasto</div><div class="stat-val" style="color:#e05252" id="stTotal">—</div></div>
+    <div class="stat-card"><div class="stat-label">Manutenções</div><div class="stat-val" id="stCount">—</div></div>
+  </div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-label">Maior Gasto</div><div class="stat-val" id="stMax">—</div></div>
+    <div class="stat-card"><div class="stat-label">Oficina Fav.</div><div class="stat-val" style="font-size:13px" id="stOficina">—</div></div>
+  </div>
+  <div id="statsByYear"></div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fabBtn" onclick="openAddModal()">
+  <span style="font-size:20px">+</span> Nova Manutenção
+</button>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="switchNav('manutencao',this)">
+    <span class="nav-icon">🔧</span>
+    <span class="nav-label">Manutenção</span>
+  </button>
+  <button class="nav-btn" onclick="switchNav('pendentes',this)">
+    <span class="nav-icon">⏰</span>
+    <span class="nav-label">Pendentes</span>
+  </button>
+</nav>
+
+<!-- ============ MODALS ============ -->
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay hidden" id="addModal">
+  <div class="modal" id="addModalBox">
+    <div class="modal-handle"></div>
+    <div class="modal-title">
+      <span id="modalTitle">Nova Manutenção</span>
+      <button class="close-btn" onclick="closeModal('addModal')">✕</button>
+    </div>
+
+    <div class="type-toggle">
+      <button class="type-btn active-feita" id="btnFeita" onclick="setModalType('feita')">✅ Já Fiz</button>
+      <button class="type-btn inactive" id="btnProxima" onclick="setModalType('proxima')">🔔 Próxima</button>
+    </div>
+
+    <div class="field"><label>Tipo / Descrição</label><input id="mTipo" placeholder="Ex: Troca de óleo"/></div>
+    <div class="field"><label>Marca / Peça</label><input id="mMarca" placeholder="Ex: NGK, Bosch..."/></div>
+
+    <div id="feitaFields">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="field"><label>Data</label><input id="mData" type="date"/></div>
+        <div class="field"><label>KM</label><input id="mKm" type="number" placeholder="200000"/></div>
+      </div>
+      <div class="field"><label>Valor (R$)</label><input id="mValor" type="number" placeholder="0,00"/></div>
+      <div class="field"><label>Oficina</label><input id="mOficina" placeholder="Ex: SoftCar"/></div>
+      <div class="field"><label>Observação</label><textarea id="mObs" placeholder="Detalhes adicionais..."></textarea></div>
+      <div class="field">
+        <label>📎 Foto / Comprovante</label>
+        <div class="photo-area" onclick="document.getElementById('photoInput').click()">
+          <div style="font-size:24px;margin-bottom:6px">📷</div>
+          <div style="font-size:13px;color:#555">Toque para adicionar foto</div>
+          <div style="font-size:11px;color:#444;margin-top:3px">Nota fiscal, comprovante...</div>
+          <input type="file" id="photoInput" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect(event)"/>
+        </div>
+        <div class="photo-preview" id="photoPreview"></div>
+      </div>
+    </div>
+
+    <div id="proximaFields" class="hidden">
+      <div class="field"><label>KM Previsto</label><input id="mKmAlerta" type="number" placeholder="Ex: 210000"/></div>
+      <div class="field"><label>Data Limite</label><input id="mDataAlerta" type="date"/></div>
+      <div class="field">
+        <label>Prioridade</label>
+        <div class="priority-grid">
+          <button class="prio-btn sel-urgente" id="prioUrgente" onclick="setPrio('urgente')">🔴 Urgente</button>
+          <button class="prio-btn" id="prioAtencao" onclick="setPrio('atencao')">🟡 Atenção</button>
+          <button class="prio-btn" id="prioOk" onclick="setPrio('ok')">🟢 Planejada</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="save-btn" onclick="saveManutencao()">Salvar</button>
+  </div>
+</div>
+
+<!-- CAR MENU MODAL -->
+<div class="modal-overlay hidden" id="carModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">
+      Meus Carros
+      <button class="close-btn" onclick="closeModal('carModal')">✕</button>
+    </div>
+    <div class="car-menu-list" id="carMenuList"></div>
+    <button class="add-car-btn" onclick="openAddCarModal()">+ Adicionar Carro</button>
+  </div>
+</div>
+
+<!-- ADD CAR MODAL -->
+<div class="modal-overlay hidden" id="addCarModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">
+      Novo Carro
+      <button class="close-btn" onclick="closeModal('addCarModal')">✕</button>
+    </div>
+    <div class="field"><label>Nome / Apelido</label><input id="cNome" placeholder="Ex: Blackout 🖤"/></div>
+    <div class="field"><label>Modelo</label><input id="cModelo" placeholder="Ex: Fiat Stilo 2.0"/></div>
+    <div class="field"><label>Ano</label><input id="cAno" type="number" placeholder="2004"/></div>
+    <div class="field"><label>KM Atual</label><input id="cKm" type="number" placeholder="200000"/></div>
+    <div class="field">
+      <label>🖼 Foto do Carro</label>
+      <div class="photo-area" onclick="document.getElementById('carPhotoInput').click()">
+        <div style="font-size:24px;margin-bottom:6px">🚗</div>
+        <div style="font-size:13px;color:#555">Toque para adicionar foto</div>
+        <input type="file" id="carPhotoInput" accept="image/*" style="display:none" onchange="handleCarPhoto(event)"/>
+      </div>
+      <div id="carPhotoPreview" style="margin-top:8px"></div>
+    </div>
+    <div class="field">
+      <label>Emblema / Ícone</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="emblemGrid">
+        🚗 🚙 🏎 🚓 🖤 ⚫ 🔥 ⚡ 💀 🐺
+      </div>
+    </div>
+    <button class="save-btn" onclick="saveNewCar()">Adicionar Carro</button>
+  </div>
+</div>
+
+<!-- SEARCH MODAL -->
+<div class="modal-overlay hidden" id="searchModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Buscar<button class="close-btn" onclick="closeModal('searchModal')">✕</button></div>
+    <input class="search-bar" id="globalSearch" placeholder="Pesquisar manutenções..." oninput="renderSearchResults()" autofocus/>
+    <div id="searchResults"></div>
+  </div>
+</div>
+
+<!-- PHOTO VIEWER -->
+<div class="modal-overlay hidden" id="photoViewer">
+  <div style="max-width:520px;width:100%;padding:20px">
+    <button onclick="closeModal('photoViewer')" style="background:#111;border:1px solid #333;color:#fff;border-radius:8px;padding:8px 16px;margin-bottom:12px;cursor:pointer;font-family:inherit">✕ Fechar</button>
+    <div id="photoViewerContent" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────
+const HIST_KEY = 'blackout_historico';
+const PROX_KEY = 'blackout_proximas';
+const CARS_KEY = 'blackout_carros';
+const KM_KEY   = 'blackout_km';
+const ACTIVE_CAR_KEY = 'blackout_active_car';
+
+const DEFAULT_CAR = {
+  id: 'blackout',
+  nome: 'Blackout 🖤',
+  modelo: 'Fiat Stilo 2.0',
+  ano: 2004,
+  km: 201000,
+  emblema: '🖤',
+  foto: null
+};
+
+// Seed data from planilha
+const SEED_HISTORICO = [{"id":1,"tipo":"Cabo de Vela","marca":"NGK","km":182168,"data":"2022-08-29","oficina":"Neco","valor":186.66,"obs":null,"fotos":[]},{"id":2,"tipo":"Mola dianteira","marca":"Ciduel","km":182714,"data":"2022-09-27","oficina":"Neco","valor":454.0,"obs":null,"fotos":[]},{"id":3,"tipo":"Mola traseira","marca":"Fabrini","km":182714,"data":"2022-09-27","oficina":"Neco","valor":805.0,"obs":null,"fotos":[]},{"id":4,"tipo":"Bateria","marca":"Zetta","km":182714,"data":"2022-09-27","oficina":"Neco","valor":389.0,"obs":null,"fotos":[]},{"id":5,"tipo":"Embreagem","marca":"Luk","km":182714,"data":"2022-10-27","oficina":"Neco","valor":2050.0,"obs":null,"fotos":[]},{"id":6,"tipo":"Bandeja susp. diant.","marca":"Grazzimetal","km":182714,"data":"2022-10-27","oficina":"Neco","valor":1016.0,"obs":null,"fotos":[]},{"id":7,"tipo":"Oleo 80w Gl-5 Hipoide","marca":"Grena","km":182714,"data":"2022-10-27","oficina":"Neco","valor":51.6,"obs":null,"fotos":[]},{"id":8,"tipo":"Fluido Freio Dot3","marca":"Varga","km":182714,"data":"2022-10-27","oficina":"Neco","valor":15.93,"obs":null,"fotos":[]},{"id":9,"tipo":"Junta Escape Coletor","marca":null,"km":182714,"data":"2022-10-27","oficina":"Neco","valor":16.0,"obs":null,"fotos":[]},{"id":10,"tipo":"Coifa Deslizante Esq.","marca":"Albarus","km":182714,"data":"2022-10-27","oficina":"Neco","valor":64.0,"obs":null,"fotos":[]},{"id":11,"tipo":"Bucha Coxim Inferior","marca":null,"km":182714,"data":"2022-10-27","oficina":"Neco","valor":86.0,"obs":null,"fotos":[]},{"id":12,"tipo":"Coifa Deslizante Dir.","marca":null,"km":182714,"data":"2022-10-27","oficina":"Neco","valor":164.7,"obs":null,"fotos":[]},{"id":13,"tipo":"Coxim De Cambio Inferior","marca":null,"km":182714,"data":"2022-10-27","oficina":"Neco","valor":109.2,"obs":null,"fotos":[]},{"id":14,"tipo":"Bomba D'água","marca":null,"km":null,"data":"2023-01-04","oficina":"Pimentel","valor":389.0,"obs":null,"fotos":[]},{"id":15,"tipo":"Fluido Para Radiador","marca":"Paraflu","km":null,"data":"2023-01-04","oficina":"Pimentel","valor":200.75,"obs":null,"fotos":[]},{"id":16,"tipo":"Agua Desmineralizada","marca":null,"km":null,"data":"2023-01-04","oficina":"Pimentel","valor":15.6,"obs":null,"fotos":[]},{"id":17,"tipo":"Detergente Limpeza Radiador","marca":"Koube","km":null,"data":"2023-01-04","oficina":"Pimentel","valor":155.04,"obs":null,"fotos":[]},{"id":18,"tipo":"Recuperacao Maq Vidro","marca":null,"km":null,"data":"2023-01-23","oficina":"Vidroshima","valor":150.0,"obs":null,"fotos":[]},{"id":19,"tipo":"Jogo De Velas","marca":null,"km":184797,"data":"2023-03-01","oficina":"Pimentel","valor":134.12,"obs":null,"fotos":[]},{"id":20,"tipo":"Flexível De Freio","marca":null,"km":184797,"data":"2023-03-01","oficina":"Pimentel","valor":211.0,"obs":null,"fotos":[]},{"id":21,"tipo":"Fluido De Freio Dot 4","marca":"Tirreno","km":184797,"data":"2023-03-01","oficina":"Pimentel","valor":203.0,"obs":null,"fotos":[]},{"id":22,"tipo":"Mangueira Arrefecimento","marca":null,"km":184797,"data":"2023-03-01","oficina":"Pimentel","valor":271.0,"obs":null,"fotos":[]},{"id":23,"tipo":"Aditivo Radiador","marca":"Paraflu","km":184797,"data":"2023-03-01","oficina":"Pimentel","valor":72.8,"obs":null,"fotos":[]},{"id":24,"tipo":"Oleo 10w40 Semi-Sint.","marca":null,"km":184797,"data":"2023-03-01","oficina":"Pimentel","valor":240.66,"obs":null,"fotos":[]},{"id":25,"tipo":"Filtro De Oleo","marca":null,"km":184797,"data":"2023-03-01","oficina":"Pimentel","valor":32.13,"obs":null,"fotos":[]},{"id":26,"tipo":"Filtro De Ar","marca":null,"km":184797,"data":"2023-03-01","oficina":"Pimentel","valor":69.93,"obs":null,"fotos":[]},{"id":27,"tipo":"Filtro De Combustivel","marca":null,"km":184797,"data":"2023-03-01","oficina":"Pimentel","valor":29.33,"obs":null,"fotos":[]},{"id":28,"tipo":"Selos Do Motor","marca":null,"km":186800,"data":"2023-07-13","oficina":"Pimentel","valor":309.76,"obs":null,"fotos":[]},{"id":29,"tipo":"Cubo Traseiro","marca":null,"km":186800,"data":"2023-07-13","oficina":"Pimentel","valor":262.43,"obs":null,"fotos":[]},{"id":30,"tipo":"Limpador Parabrisa Diant.","marca":"Gira Parts","km":186800,"data":"2023-07-13","oficina":"Pimentel","valor":26.58,"obs":null,"fotos":[]},{"id":31,"tipo":"Limpador Parabrisa Tras.","marca":"Gira Parts","km":186800,"data":"2023-07-13","oficina":"Pimentel","valor":25.5,"obs":null,"fotos":[]},{"id":32,"tipo":"Calota Para Cubo","marca":null,"km":186800,"data":"2023-07-13","oficina":"Pimentel","valor":18.0,"obs":null,"fotos":[]},{"id":33,"tipo":"Mangueira Bomba D'água","marca":null,"km":186800,"data":"2023-07-13","oficina":"Pimentel","valor":35.12,"obs":null,"fotos":[]},{"id":34,"tipo":"Junta Coletor Admissão","marca":"Taranto","km":186800,"data":"2023-07-13","oficina":"Pimentel","valor":18.9,"obs":null,"fotos":[]},{"id":35,"tipo":"Terminal De Direção","marca":"Perfect","km":186800,"data":"2023-07-13","oficina":"Pimentel","valor":222.6,"obs":null,"fotos":[]},{"id":36,"tipo":"Axial De Direção","marca":"Ampri","km":186800,"data":"2023-07-13","oficina":"Pimentel","valor":59.5,"obs":null,"fotos":[]},{"id":37,"tipo":"Cabo Freio De Mão Esq.","marca":null,"km":186800,"data":"2023-07-13","oficina":"Pimentel","valor":126.0,"obs":null,"fotos":[]},{"id":38,"tipo":"Aditivo Radiador","marca":"Paraflu","km":186800,"data":"2023-07-13","oficina":"Pimentel","valor":70.0,"obs":null,"fotos":[]},{"id":39,"tipo":"Pneu Remold","marca":"Remold","km":186800,"data":"2023-07-20","oficina":"Auto Center Bras Cubas","valor":580.0,"obs":null,"fotos":[]},{"id":40,"tipo":"Mangueira Respiro Tras.","marca":null,"km":188921,"data":"2024-01-23","oficina":"Pimentel","valor":69.86,"obs":null,"fotos":[]},{"id":41,"tipo":"Mangueira Respiro Sup.","marca":null,"km":188921,"data":"2024-01-23","oficina":"Pimentel","valor":35.63,"obs":null,"fotos":[]},{"id":42,"tipo":"Tampa Cabeçote","marca":"Florio","km":188921,"data":"2024-01-23","oficina":"Pimentel","valor":525.2,"obs":null,"fotos":[]},{"id":43,"tipo":"Oring Lado Bobina","marca":"Original GM","km":188921,"data":"2024-01-23","oficina":"Pimentel","valor":75.6,"obs":null,"fotos":[]},{"id":44,"tipo":"Silicone Alta Temp.","marca":"Wurth","km":188921,"data":"2024-01-23","oficina":"Pimentel","valor":55.0,"obs":null,"fotos":[]},{"id":45,"tipo":"Fluido De Freio Dot 4","marca":"Tirreno","km":188921,"data":"2024-01-23","oficina":"Pimentel","valor":252.8,"obs":null,"fotos":[]},{"id":46,"tipo":"Cilindro Freio Traseiro","marca":"Trw","km":188921,"data":"2024-01-23","oficina":"Pimentel","valor":155.74,"obs":null,"fotos":[]},{"id":47,"tipo":"Oleo 10w40","marca":"Havoline","km":188921,"data":"2024-01-23","oficina":"Pimentel","valor":195.51,"obs":null,"fotos":[]},{"id":48,"tipo":"Filtro De Oleo","marca":null,"km":188921,"data":"2024-01-23","oficina":"Pimentel","valor":23.66,"obs":null,"fotos":[]},{"id":49,"tipo":"Velas De Ignição","marca":"NGK","km":188921,"data":"2024-01-23","oficina":"Pimentel","valor":134.12,"obs":null,"fotos":[]},{"id":50,"tipo":"Aditivo Arrefecimento","marca":"Paraflu","km":188921,"data":"2024-01-23","oficina":"Pimentel","valor":35.0,"obs":null,"fotos":[]},{"id":51,"tipo":"Tampa De Óleo","marca":"Florio","km":188921,"data":"2024-01-23","oficina":"Pimentel","valor":31.0,"obs":null,"fotos":[]},{"id":52,"tipo":"Kit Bucha Barra Estab.","marca":null,"km":189000,"data":"2024-05-09","oficina":"Pimentel","valor":415.74,"obs":null,"fotos":[]},{"id":53,"tipo":"Rolamento Traseiro","marca":null,"km":189000,"data":"2024-05-09","oficina":"Pimentel","valor":650.97,"obs":null,"fotos":[]},{"id":54,"tipo":"Mangueira Respiro Oleo","marca":null,"km":189500,"data":"2024-07-10","oficina":"Pimentel","valor":24.5,"obs":null,"fotos":[]},{"id":55,"tipo":"Condensador","marca":null,"km":196607,"data":"2025-03-14","oficina":"SoftCar","valor":727.0,"obs":null,"fotos":[]},{"id":56,"tipo":"Radiador","marca":"Notus","km":196607,"data":"2025-03-14","oficina":"SoftCar","valor":946.78,"obs":null,"fotos":[]},{"id":57,"tipo":"Bieleta","marca":null,"km":196607,"data":"2025-03-14","oficina":"SoftCar","valor":131.0,"obs":null,"fotos":[]},{"id":58,"tipo":"Bandeja Suspensão Diant.","marca":null,"km":196607,"data":"2025-03-14","oficina":"SoftCar","valor":1150.16,"obs":null,"fotos":[]},{"id":59,"tipo":"Pivo Bandeja Dianteira","marca":null,"km":196607,"data":"2025-03-14","oficina":"SoftCar","valor":398.0,"obs":null,"fotos":[]},{"id":60,"tipo":"Pastilha Freio Diant.","marca":null,"km":196607,"data":"2025-03-14","oficina":"SoftCar","valor":131.0,"obs":null,"fotos":[]},{"id":61,"tipo":"Retifica Disco Diant.","marca":null,"km":196607,"data":"2025-03-14","oficina":"SoftCar","valor":230.0,"obs":null,"fotos":[]},{"id":62,"tipo":"Fluido de Freio","marca":null,"km":196607,"data":"2025-03-14","oficina":"SoftCar","valor":240.0,"obs":null,"fotos":[]},{"id":63,"tipo":"Filtro de Óleo","marca":null,"km":196607,"data":"2025-03-14","oficina":"SoftCar","valor":18.0,"obs":null,"fotos":[]},{"id":64,"tipo":"Articulação Axial","marca":null,"km":196607,"data":"2025-03-14","oficina":"SoftCar","valor":402.0,"obs":null,"fotos":[]},{"id":65,"tipo":"Kit Amortecedor Diant.","marca":null,"km":196607,"data":"2025-03-14","oficina":"SoftCar","valor":744.0,"obs":null,"fotos":[]},{"id":66,"tipo":"Óleo de Câmbio","marca":null,"km":196607,"data":"2025-03-14","oficina":"SoftCar","valor":282.0,"obs":null,"fotos":[]},{"id":67,"tipo":"Óleo Motor 5W30","marca":null,"km":196607,"data":"2025-03-14","oficina":"SoftCar","valor":268.0,"obs":null,"fotos":[]},{"id":68,"tipo":"Recuperacao Maq Vidro","marca":null,"km":null,"data":"2025-04-02","oficina":"Vidroshima","valor":200.0,"obs":null,"fotos":[]},{"id":69,"tipo":"Bateria","marca":"Moura","km":196650,"data":"2025-05-24","oficina":"Jucar Auto Elétrica","valor":700.0,"obs":null,"fotos":[]},{"id":70,"tipo":"Terminal Bateria","marca":null,"km":null,"data":"2025-06-10","oficina":"Nicolau Auto Elétrica","valor":616.2,"obs":null,"fotos":[]},{"id":71,"tipo":"Recuperacao Maq Vidro","marca":null,"km":null,"data":"2025-10-24","oficina":"Vidroshima","valor":200.0,"obs":null,"fotos":[]},{"id":72,"tipo":"Velas Iridium","marca":"NGK","km":200492,"data":"2025-11-26","oficina":"SoftCar","valor":300.0,"obs":"Próxima: 280.000 km","fotos":[]},{"id":73,"tipo":"Oleo Motor","marca":null,"km":200492,"data":"2025-11-26","oficina":"SoftCar","valor":204.0,"obs":null,"fotos":[]},{"id":74,"tipo":"Filtro De Oleo","marca":null,"km":200492,"data":"2025-11-26","oficina":"SoftCar","valor":28.0,"obs":null,"fotos":[]},{"id":75,"tipo":"Aditivo Radiador","marca":null,"km":200492,"data":"2025-11-26","oficina":"SoftCar","valor":142.5,"obs":null,"fotos":[]},{"id":76,"tipo":"Escapamento Traseiro","marca":null,"km":200492,"data":"2026-02-23","oficina":"Paiva Pneus","valor":380.0,"obs":null,"fotos":[]},{"id":77,"tipo":"Pneu Michelin Primacy 4","marca":null,"km":200500,"data":"2026-02-26","oficina":"Paiva Pneus","valor":2600.0,"obs":"195/65/15","fotos":[]},{"id":78,"tipo":"Pastilha De Freio","marca":"Cobreq","km":200000,"data":"2026-03-11","oficina":"SoftCar","valor":282.0,"obs":null,"fotos":[]},{"id":79,"tipo":"Retifica Disco","marca":null,"km":200000,"data":"2026-03-11","oficina":"SoftCar","valor":110.0,"obs":null,"fotos":[]},{"id":80,"tipo":"Fluido Freio","marca":null,"km":200000,"data":"2026-03-11","oficina":"SoftCar","valor":39.9,"obs":null,"fotos":[]},{"id":81,"tipo":"Junta Tampa Valvula","marca":null,"km":200000,"data":"2026-03-11","oficina":"SoftCar","valor":184.0,"obs":null,"fotos":[]},{"id":82,"tipo":"Retentor Motor","marca":null,"km":200000,"data":"2026-03-11","oficina":"SoftCar","valor":39.0,"obs":null,"fotos":[]},{"id":83,"tipo":"Retentor Mancal","marca":null,"km":200000,"data":"2026-03-11","oficina":"SoftCar","valor":52.0,"obs":null,"fotos":[]},{"id":84,"tipo":"Kit Correia Dentada","marca":"Aldeco / GM","km":200000,"data":"2026-03-11","oficina":"SoftCar","valor":847.0,"obs":"Próxima: 80.000 km / 3 Anos","fotos":[]}];
+
+// Próximas baseadas no histórico
+const SEED_PROXIMAS = [
+  {id:'p1',tipo:'Troca de Óleo + Filtro',kmAlerta:210000,dataAlerta:'2026-08-01',prioridade:'atencao',obs:'A cada ~10.000 km. Última: 200.492 km'},
+  {id:'p2',tipo:'Velas Iridium',kmAlerta:280000,dataAlerta:null,prioridade:'ok',obs:'NGK Iridium. Última: 200.492 km'},
+  {id:'p3',tipo:'Correia Dentada',kmAlerta:280000,dataAlerta:'2029-03-01',prioridade:'ok',obs:'A cada 80.000 km / 3 anos. Última: 200.000 km'},
+  {id:'p4',tipo:'Pneus',kmAlerta:240000,dataAlerta:null,prioridade:'ok',obs:'Michelin Primacy 4 195/65/15. Última: 200.500 km'},
+  {id:'p5',tipo:'Fluido de Freio',kmAlerta:210000,dataAlerta:null,prioridade:'atencao',obs:'A cada ~10.000 km ou 1 ano. Última: 200.000 km'},
+  {id:'p6',tipo:'Aditivo Radiador',kmAlerta:212000,dataAlerta:null,prioridade:'ok',obs:'Verificar concentração. Última: 200.492 km'},
+];
+
+// ─── STATE ───────────────────────────────────────────────────────
+let historico = JSON.parse(localStorage.getItem(HIST_KEY) || 'null') || SEED_HISTORICO;
+let proximas  = JSON.parse(localStorage.getItem(PROX_KEY) || 'null') || SEED_PROXIMAS;
+let carros    = JSON.parse(localStorage.getItem(CARS_KEY) || 'null') || [DEFAULT_CAR];
+let activeCarId = localStorage.getItem(ACTIVE_CAR_KEY) || 'blackout';
+let currentKm = parseInt(localStorage.getItem(KM_KEY) || '201000');
+let currentTab = 'alertas';
+let editingId  = null;
+let modalType  = 'feita';
+let selectedPrio = 'urgente';
+let pendingPhotos = []; // base64 array
+let newCarPhoto = null;
+
+function save() {
+  localStorage.setItem(HIST_KEY, JSON.stringify(historico));
+  localStorage.setItem(PROX_KEY, JSON.stringify(proximas));
+  localStorage.setItem(CARS_KEY, JSON.stringify(carros));
+  localStorage.setItem(KM_KEY, String(currentKm));
+  localStorage.setItem(ACTIVE_CAR_KEY, activeCarId);
+}
+
+function activeCar() { return carros.find(c=>c.id===activeCarId)||carros[0]; }
+
+// ─── FORMAT ──────────────────────────────────────────────────────
+const fmt  = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const fmtD = d => { if(!d) return '—'; const [y,m,di]=d.split('-'); return `${di}/${m}/${y}`; };
+const fmtKm = k => k ? k.toLocaleString('pt-BR')+' km' : '—';
+
+// ─── HEADER ──────────────────────────────────────────────────────
+function updateHeader() {
+  const c = activeCar();
+  document.getElementById('headerCarName').textContent = c.nome;
+  document.getElementById('headerCarSub').textContent  = `${c.modelo} · ${c.ano}`;
+  const ph = document.getElementById('headerCarPhoto');
+  if(c.foto) ph.innerHTML=`<img src="${c.foto}"/>`;
+  else ph.innerHTML=`<span style="font-size:20px">${c.emblema||'🚗'}</span>`;
+  document.getElementById('kmText').textContent = currentKm.toLocaleString('pt-BR');
+  const total = historico.reduce((s,m)=>s+m.valor,0);
+  document.getElementById('totalGasto').textContent = fmt(total);
+}
+
+// ─── KM EDIT ─────────────────────────────────────────────────────
+function startKmEdit() {
+  document.getElementById('kmDisplay').classList.add('hidden');
+  const inp = document.getElementById('kmInput');
+  inp.classList.remove('hidden');
+  inp.value = currentKm;
+  inp.focus();
+  inp.select();
+}
+function saveKm() {
+  const val = parseInt(document.getElementById('kmInput').value);
+  if(!isNaN(val)&&val>0) { currentKm=val; save(); }
+  document.getElementById('kmDisplay').classList.remove('hidden');
+  document.getElementById('kmInput').classList.add('hidden');
+  updateHeader();
+  renderAlertas();
+}
+
+// ─── TABS ────────────────────────────────────────────────────────
+function switchTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tabAlertas').classList.toggle('hidden', tab!=='alertas');
+  document.getElementById('tabHistorico').classList.toggle('hidden', tab!=='historico');
+  document.getElementById('tabStats').classList.toggle('hidden', tab!=='stats');
+  if(tab==='alertas')  renderAlertas();
+  if(tab==='historico') renderHistorico();
+  if(tab==='stats')    renderStats();
+}
+function switchNav(nav, btn) {
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ─── ALERTAS ─────────────────────────────────────────────────────
+function renderAlertas() {
+  const list = document.getElementById('alertasList');
+  if(!proximas.length) { list.innerHTML='<div class="empty"><div class="em-icon">🎉</div><div>Nenhuma manutenção pendente!</div></div>'; return; }
+  const sorted = [...proximas].sort((a,b)=>{const o={urgente:0,atencao:1,ok:2}; return o[a.prioridade]-o[b.prioridade];});
+  list.innerHTML = sorted.map(p=>{
+    const kmFalta = p.kmAlerta ? p.kmAlerta - currentKm : null;
+    const vencido = kmFalta !== null && kmFalta <= 0;
+    const cls = vencido ? 'urgente' : p.prioridade;
+    const badge = vencido ? '⚠️ Vencida!' : cls==='urgente'?'🔴 Urgente':cls==='atencao'?'🟡 Atenção':'🟢 Planejada';
+    return `<div class="alert-card ${cls}">
+      <div class="alert-header">
+        <div><div class="alert-title">${p.tipo}</div>${p.obs?`<div class="alert-desc">${p.obs}</div>`:''}
+        </div><span class="alert-badge">${badge}</span>
+      </div>
+      <div class="alert-info">
+        ${p.kmAlerta?`<span>🔢 ${fmtKm(p.kmAlerta)} ${kmFalta!==null?`(${kmFalta>0?'+'+fmtKm(kmFalta):'Passou '+fmtKm(-kmFalta)})`:''}</span>`:''}
+        ${p.dataAlerta?`<span>📅 ${fmtD(p.dataAlerta)}</span>`:''}
+      </div>
+      <button class="mark-done-btn" onclick="marcarFeita('${p.id}')">✓ Marcar como feita</button>
+    </div>`;
+  }).join('');
+}
+
+function marcarFeita(id) {
+  const p = proximas.find(x=>x.id===id);
+  if(!p) return;
+  proximas = proximas.filter(x=>x.id!==id);
+  historico.unshift({id:Date.now(),tipo:p.tipo,marca:null,km:currentKm,data:new Date().toISOString().slice(0,10),oficina:'',valor:0,obs:p.obs||null,fotos:[]});
+  save(); renderAlertas(); updateHeader();
+}
+
+// ─── HISTÓRICO ───────────────────────────────────────────────────
+function renderHistorico() {
+  const q = (document.getElementById('searchInput')?.value||'').toLowerCase();
+  const list = document.getElementById('historicoList');
+  const items = [...historico].sort((a,b)=>b.data.localeCompare(a.data)).filter(m=>
+    !q||m.tipo.toLowerCase().includes(q)||(m.oficina||'').toLowerCase().includes(q)||(m.marca||'').toLowerCase().includes(q)
+  );
+  if(!items.length){list.innerHTML='<div class="empty"><div class="em-icon">🔧</div><div>Nenhuma manutenção encontrada</div></div>';return;}
+  const icons={'oleo':'🛢','filtro':'🔲','pneu':'⚫','freio':'🔴','bateria':'⚡','vela':'💡','correia':'⚙️','suspens':'🔩','radiador':'💧','embrea':'🔄','default':'🔧'};
+  function icon(t){const lc=t.toLowerCase();for(const[k,v] of Object.entries(icons)){if(lc.includes(k))return v;}return icons.default;}
+  list.innerHTML = items.map(m=>`
+    <div class="hist-item">
+      <div class="hist-icon">${icon(m.tipo)}</div>
+      <div class="hist-body">
+        <div class="hist-title">${m.tipo}</div>
+        <div class="hist-sub">${fmtD(m.data)}${m.km?' · '+fmtKm(m.km):''}${m.oficina?' · '+m.oficina:''}</div>
+        ${m.marca?`<div class="hist-brand">${m.marca}</div>`:''}
+        ${m.obs?`<div style="font-size:11px;color:#666;margin-top:2px">${m.obs}</div>`:''}
+      </div>
+      <div class="hist-right">
+        <div class="hist-value">${m.valor>0?fmt(m.valor):'—'}</div>
+        <div class="hist-meta">
+          ${m.fotos&&m.fotos.length?`<span class="photo-badge" onclick="viewPhotos(${m.id})">📷 ${m.fotos.length}</span>`:''}
+          <button class="hist-btn" onclick="editManutencao(${m.id})">✎</button>
+          <button class="hist-btn" onclick="deleteManutencao(${m.id})">✕</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function deleteManutencao(id) {
+  if(!confirm('Excluir esta manutenção?')) return;
+  historico = historico.filter(m=>m.id!==id);
+  save(); renderHistorico(); updateHeader();
+}
+
+function viewPhotos(id) {
+  const m = historico.find(x=>x.id===id);
+  if(!m||!m.fotos||!m.fotos.length) return;
+  document.getElementById('photoViewerContent').innerHTML = m.fotos.map(f=>`<img src="${f}" style="max-width:100%;border-radius:8px;margin-bottom:8px"/>`).join('');
+  document.getElementById('photoViewer').classList.remove('hidden');
+}
+
+// ─── STATS ───────────────────────────────────────────────────────
+function renderStats() {
+  const total = historico.reduce((s,m)=>s+m.valor,0);
+  document.getElementById('stTotal').textContent = fmt(total);
+  document.getElementById('stCount').textContent = historico.length;
+  const maxM = historico.reduce((a,b)=>a.valor>b.valor?a:b,{valor:0,tipo:'—'});
+  document.getElementById('stMax').textContent = maxM.valor>0?fmt(maxM.valor):'—';
+  const ofCount={};
+  historico.forEach(m=>{if(m.oficina)ofCount[m.oficina]=(ofCount[m.oficina]||0)+1;});
+  const topOf = Object.entries(ofCount).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('stOficina').textContent = topOf?topOf[0]:'—';
+  const byYear={};
+  historico.forEach(m=>{const y=m.data?.slice(0,4)||'?';byYear[y]=(byYear[y]||0)+m.valor;});
+  document.getElementById('statsByYear').innerHTML = Object.entries(byYear).sort((a,b)=>b[0].localeCompare(a[0])).map(([y,v])=>`
+    <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #1a1a1a;font-size:14px">
+      <span style="color:#888">${y}</span><span style="font-weight:600;color:#e05252">${fmt(v)}</span>
+    </div>`).join('');
+}
+
+// ─── ADD/EDIT MODAL ──────────────────────────────────────────────
+function openAddModal(type='feita') {
+  editingId = null;
+  pendingPhotos = [];
+  document.getElementById('modalTitle').textContent = 'Nova Manutenção';
+  document.getElementById('mTipo').value='';
+  document.getElementById('mMarca').value='';
+  document.getElementById('mData').value=new Date().toISOString().slice(0,10);
+  document.getElementById('mKm').value='';
+  document.getElementById('mValor').value='';
+  document.getElementById('mOficina').value='';
+  document.getElementById('mObs').value='';
+  document.getElementById('mKmAlerta').value='';
+  document.getElementById('mDataAlerta').value='';
+  document.getElementById('photoPreview').innerHTML='';
+  setModalType(type);
+  setPrio('atencao');
+  document.getElementById('addModal').classList.remove('hidden');
+}
+
+function editManutencao(id) {
+  const m = historico.find(x=>x.id===id);
+  if(!m) return;
+  editingId = id;
+  pendingPhotos = m.fotos ? [...m.fotos] : [];
+  document.getElementById('modalTitle').textContent = 'Editar Manutenção';
+  document.getElementById('mTipo').value=m.tipo||'';
+  document.getElementById('mMarca').value=m.marca||'';
+  document.getElementById('mData').value=m.data||'';
+  document.getElementById('mKm').value=m.km||'';
+  document.getElementById('mValor').value=m.valor||'';
+  document.getElementById('mOficina').value=m.oficina||'';
+  document.getElementById('mObs').value=m.obs||'';
+  setModalType('feita');
+  renderPhotoPreview();
+  document.getElementById('addModal').classList.remove('hidden');
+}
+
+function setModalType(type) {
+  modalType = type;
+  document.getElementById('btnFeita').className='type-btn '+(type==='feita'?'active-feita':'inactive');
+  document.getElementById('btnProxima').className='type-btn '+(type==='proxima'?'active-prox':'inactive');
+  document.getElementById('feitaFields').classList.toggle('hidden', type!=='feita');
+  document.getElementById('proximaFields').classList.toggle('hidden', type!=='proxima');
+}
+
+function setPrio(p) {
+  selectedPrio = p;
+  document.getElementById('prioUrgente').className='prio-btn'+(p==='urgente'?' sel-urgente':'');
+  document.getElementById('prioAtencao').className='prio-btn'+(p==='atencao'?' sel-atencao':'');
+  document.getElementById('prioOk').className='prio-btn'+(p==='ok'?' sel-ok':'');
+}
+
+async function handlePhotoSelect(e) {
+  const files = Array.from(e.target.files);
+  for(const f of files) {
+    const b64 = await toBase64(f);
+    pendingPhotos.push(b64);
+  }
+  renderPhotoPreview();
+}
+function toBase64(file){return new Promise(r=>{const fr=new FileReader();fr.onload=e=>r(e.target.result);fr.readAsDataURL(file);})}
+function renderPhotoPreview(){
+  document.getElementById('photoPreview').innerHTML=pendingPhotos.map((p,i)=>
+    `<div class="photo-thumb-wrap"><img src="${p}" class="photo-thumb"/><button class="photo-remove" onclick="removePhoto(${i})">✕</button></div>`
+  ).join('');
+}
+function removePhoto(i){pendingPhotos.splice(i,1);renderPhotoPreview();}
+
+function saveManutencao() {
+  const tipo = document.getElementById('mTipo').value.trim();
+  if(!tipo) { alert('Preencha o tipo/descrição'); return; }
+  if(modalType==='feita') {
+    const item = {
+      id: editingId || Date.now(),
+      tipo,
+      marca: document.getElementById('mMarca').value.trim()||null,
+      km: parseInt(document.getElementById('mKm').value)||null,
+      data: document.getElementById('mData').value||new Date().toISOString().slice(0,10),
+      oficina: document.getElementById('mOficina').value.trim()||null,
+      valor: parseFloat(document.getElementById('mValor').value)||0,
+      obs: document.getElementById('mObs').value.trim()||null,
+      fotos: [...pendingPhotos]
+    };
+    if(editingId) { const i=historico.findIndex(x=>x.id===editingId); if(i>=0)historico[i]=item; }
+    else historico.unshift(item);
+    if(item.km && item.km > currentKm) { currentKm = item.km; }
+  } else {
+    const p = {
+      id: 'p'+Date.now(),
+      tipo,
+      kmAlerta: parseInt(document.getElementById('mKmAlerta').value)||null,
+      dataAlerta: document.getElementById('mDataAlerta').value||null,
+      prioridade: selectedPrio,
+      obs: document.getElementById('mMarca').value.trim()||null
+    };
+    proximas.push(p);
+  }
+  save(); closeModal('addModal'); updateHeader();
+  if(modalType==='feita'){ switchTab('historico',document.querySelectorAll('.tab')[1]); renderHistorico(); }
+  else { switchTab('alertas',document.querySelectorAll('.tab')[0]); renderAlertas(); }
+}
+
+// ─── CAR MENU ────────────────────────────────────────────────────
+function openCarMenu() {
+  const list = document.getElementById('carMenuList');
+  list.innerHTML = carros.map(c=>`
+    <div class="car-menu-item ${c.id===activeCarId?'active':''}" onclick="selectCar('${c.id}')">
+      <div class="car-menu-photo">${c.foto?`<img src="${c.foto}"/>`:`<span>${c.emblema||'🚗'}</span>`}</div>
+      <div class="car-menu-info">
+        <div class="car-menu-name">${c.nome}</div>
+        <div class="car-menu-sub">${c.modelo} · ${c.ano} · ${fmtKm(c.km)}</div>
+      </div>
+      ${c.id===activeCarId?`<span class="car-menu-check">✓</span>`:''}
+    </div>`).join('');
+  document.getElementById('carModal').classList.remove('hidden');
+}
+function selectCar(id) { activeCarId=id; save(); closeModal('carModal'); updateHeader(); renderAlertas(); }
+
+function openAddCarModal() { closeModal('carModal'); newCarPhoto=null; document.getElementById('addCarModal').classList.remove('hidden'); }
+async function handleCarPhoto(e){
+  const f=e.target.files[0];if(!f)return;
+  newCarPhoto=await toBase64(f);
+  document.getElementById('carPhotoPreview').innerHTML=`<img src="${newCarPhoto}" style="width:80px;height:80px;border-radius:12px;object-fit:cover"/>`;
+}
+function saveNewCar(){
+  const nome=document.getElementById('cNome').value.trim();
+  if(!nome){alert('Preencha o nome do carro');return;}
+  const car={
+    id:'car'+Date.now(),
+    nome,
+    modelo:document.getElementById('cModelo').value.trim()||'',
+    ano:parseInt(document.getElementById('cAno').value)||2000,
+    km:parseInt(document.getElementById('cKm').value)||0,
+    emblema:'🚗',
+    foto:newCarPhoto
+  };
+  carros.push(car);
+  activeCarId=car.id;
+  save();closeModal('addCarModal');updateHeader();
+}
+
+// ─── SEARCH ──────────────────────────────────────────────────────
+function openSearch(){document.getElementById('searchModal').classList.remove('hidden');document.getElementById('globalSearch').value='';document.getElementById('searchResults').innerHTML='';}
+function renderSearchResults(){
+  const q=document.getElementById('globalSearch').value.toLowerCase();
+  if(!q){document.getElementById('searchResults').innerHTML='';return;}
+  const items=historico.filter(m=>m.tipo.toLowerCase().includes(q)||(m.oficina||'').toLowerCase().includes(q)||(m.marca||'').toLowerCase().includes(q)).slice(0,20);
+  document.getElementById('searchResults').innerHTML=items.length
+    ?items.map(m=>`<div style="padding:12px 0;border-bottom:1px solid #1a1a1a"><div style="font-weight:600;font-size:14px">${m.tipo}</div><div style="font-size:12px;color:#666;margin-top:3px">${fmtD(m.data)} · ${m.km?fmtKm(m.km):'—'} · ${m.oficina||'—'} · ${fmt(m.valor)}</div></div>`).join('')
+    :'<div style="color:#555;padding:20px 0;text-align:center">Nenhum resultado</div>';
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────
+function closeModal(id){document.getElementById(id).classList.add('hidden');}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.add('hidden');}));
+function H(cls){return{classList:{add:()=>{},remove:()=>{},toggle:()=>{}}};}
+
+// ─── INIT ────────────────────────────────────────────────────────
+updateHeader();
+renderAlertas();
+</script>
+</body>
+</html>

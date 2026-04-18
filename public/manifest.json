@@ -1,0 +1,15 @@
+{
+  "short_name": "Blackout 🖤",
+  "name": "Blackout - Manutenções",
+  "description": "Controle de manutenções do Fiat Stilo",
+  "icons": [
+    {"src":"icon.png","type":"image/png","sizes":"192x192","purpose":"any maskable"},
+    {"src":"icon.png","type":"image/png","sizes":"512x512","purpose":"any maskable"}
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0a0a0a",
+  "background_color": "#0a0a0a",
+  "orientation": "portrait",
+  "lang": "pt-BR"
+}
