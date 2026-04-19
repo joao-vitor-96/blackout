@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -352,6 +353,52 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a0a;color:#f0f0f
 </div>
 
 <script>
+// ─── SUPABASE ────────────────────────────────────────────────────
+const SB_URL = 'https://ugqglsuidzxcbzyzmfgp.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVncWdsc3VpZHp4Y2J6eXptZmdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0ODQyMTIsImV4cCI6MjA5MjA2MDIxMn0.ti9qFze0uiDkU7cqQ88wjwqKvnsB4ij0WXmTcLhQZuE';
+const SB_H = {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+
+async function sbGet(table,params=''){
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/${table}?${params}&limit=5000`,{headers:SB_H});
+    if(!r.ok){const e=await r.json().catch(()=>({}));console.error('sbGet error',table,r.status,e);return null;}
+    return await r.json();
+  }catch(e){console.error('sbGet fetch error',table,e);return null;}}
+
+async function sbUpsert(table,data){
+  if(!data||!data.length) return true;
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/${table}`,{
+      method:'POST',headers:{...SB_H,'Prefer':'resolution=merge-duplicates,return=minimal'},
+      body:JSON.stringify(data)});
+    if(!r.ok){const e=await r.json().catch(()=>({}));console.error('sbUpsert error',table,r.status,JSON.stringify(e));showSyncError(table,r.status,e?.message||e?.details||'erro desconhecido');return false;}
+    return true;
+  }catch(e){console.error('sbUpsert fetch error',table,e);return false;}}
+
+function showSyncError(table,status,msg){
+  let el=document.getElementById('syncBadge');
+  if(!el) return;
+  el.textContent=`⚠️ Erro ${status}: ${table} — ${msg}`;
+  el.style.background='#1a0a0a';el.style.color='#e05252';el.style.opacity='1';
+  el.style.maxWidth='90vw';el.style.fontSize='10px';
+  console.warn('SYNC ERROR',table,status,msg);
+}
+
+async function sbDelete(table,col,val){
+  try{const r=await fetch(`${SB_URL}/rest/v1/${table}?${col}=eq.${val}`,{
+    method:'DELETE',headers:SB_H});
+  return r.ok;}catch(e){return false;}}
+
+function showSync(state){
+  let el=document.getElementById('syncBadge');
+  if(!el){el=document.createElement('div');el.id='syncBadge';
+    el.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px)+8px);right:16px;z-index:9999;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;pointer-events:none;transition:opacity .5s';
+    document.body.appendChild(el);}
+  const m={saving:['⏳ Salvando','#111','#94a3b8'],ok:['☁️ Salvo','#0a1a0a','#52e072'],error:['⚠️ Erro','#1a0a0a','#e05252']};
+  const[txt,bg,col]=m[state]||m.ok;
+  el.textContent=txt;el.style.background=bg;el.style.color=col;el.style.opacity='1';
+  if(state==='ok')setTimeout(()=>{el.style.opacity='0';},3000);}
+
 // ─── DATA ───────────────────────────────────────────────────────
 const HIST_KEY = 'blackout_historico';
 const PROX_KEY = 'blackout_proximas';
@@ -395,12 +442,36 @@ let selectedPrio = 'urgente';
 let pendingPhotos = []; // base64 array
 let newCarPhoto = null;
 
-function save() {
+function saveLocal() {
   localStorage.setItem(HIST_KEY, JSON.stringify(historico));
   localStorage.setItem(PROX_KEY, JSON.stringify(proximas));
   localStorage.setItem(CARS_KEY, JSON.stringify(carros));
   localStorage.setItem(KM_KEY, String(currentKm));
   localStorage.setItem(ACTIVE_CAR_KEY, activeCarId);
+}
+async function save() {
+  saveLocal();
+  showSync('saving');
+  try {
+    const carroId = activeCarId;
+    const ok = await Promise.all([
+      sbUpsert('historico', historico.map(m=>({
+        id:m.id, tipo:m.tipo, marca:m.marca||null, km:m.km||null,
+        data:m.data, oficina:m.oficina||null, valor:m.valor||0,
+        obs:m.obs||null, fotos:m.fotos||[], carro_id:carroId
+      }))),
+      sbUpsert('proximas', proximas.map(p=>({
+        id:String(p.id), tipo:p.tipo, km_alerta:p.kmAlerta||null,
+        data_alerta:p.dataAlerta||null, prioridade:p.prioridade,
+        obs:p.obs||null, carro_id:carroId
+      }))),
+      sbUpsert('carros', carros.map(c=>({
+        id:c.id, nome:c.nome, modelo:c.modelo, ano:c.ano,
+        km:c.km||0, emblema:c.emblema||'🚗', foto:c.foto||null
+      })))
+    ]);
+    showSync(ok.every(Boolean)?'ok':'error');
+  } catch(e){ showSync('error'); }
 }
 
 function activeCar() { return carros.find(c=>c.id===activeCarId)||carros[0]; }
@@ -713,6 +784,33 @@ function H(cls){return{classList:{add:()=>{},remove:()=>{},toggle:()=>{}}};}
 // ─── INIT ────────────────────────────────────────────────────────
 updateHeader();
 renderAlertas();
+// Load from Supabase
+(async()=>{
+  showSync('saving');
+  const [histRaw,proxRaw,carrosRaw]=await Promise.all([
+    sbGet('historico','order=data.desc'),
+    sbGet('proximas','order=prioridade'),
+    sbGet('carros','order=nome')
+  ]);
+  if(histRaw&&histRaw.length>0){
+    historico=histRaw.map(m=>({id:m.id,tipo:m.tipo,marca:m.marca,km:m.km,
+      data:m.data,oficina:m.oficina,valor:Number(m.valor)||0,obs:m.obs,fotos:m.fotos||[]}));
+    saveLocal();
+  }
+  if(proxRaw&&proxRaw.length>=0){
+    proximas=proxRaw.map(p=>({id:p.id,tipo:p.tipo,kmAlerta:p.km_alerta,
+      dataAlerta:p.data_alerta,prioridade:p.prioridade,obs:p.obs}));
+    saveLocal();
+  }
+  if(carrosRaw&&carrosRaw.length>0){
+    carros=carrosRaw.map(c=>({id:c.id,nome:c.nome,modelo:c.modelo,ano:c.ano,
+      km:c.km,emblema:c.emblema,foto:c.foto}));
+    saveLocal();
+  }
+  showSync('ok');
+  updateHeader();
+  renderAlertas();
+})();
 </script>
 </body>
 </html>
